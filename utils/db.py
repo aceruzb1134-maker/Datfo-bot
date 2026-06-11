@@ -7,9 +7,9 @@ _pool = None
 async def get_pool():
     global _pool
     if _pool is None:
-        _pool = await asyncpg.create_pool(os.environ.get("DATABASE_URL"), ssl="require")
+        db_url = os.environ.get("DATABASE_PUBLIC_URL") or os.environ.get("DATABASE_URL")
+        _pool = await asyncpg.create_pool(db_url, ssl="require")
     return _pool
-
 
 async def init_db():
     pool = await get_pool()
