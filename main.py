@@ -30,8 +30,9 @@ async def main():
     dp["admin_ids"] = ADMIN_IDS
 
     # Register routers — admin first so /start is handled correctly
-    dp.include_router(admin.router)
     dp.include_router(pharmacy.router)
+    dp.include_router(admin.router)
+    
 
     print(f"🤖 Бот запущен. Администраторы: {ADMIN_IDS}")
     await dp.start_polling(bot, allowed_updates=["message", "callback_query"])
