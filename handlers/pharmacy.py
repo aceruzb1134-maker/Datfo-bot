@@ -68,13 +68,23 @@ async def handle_inn(message: Message, state: FSMContext):
         )
         return
 
-    await state.update_data(inn=inn)
+ await state.update_data(inn=inn)
     await state.set_state(RegState.waiting_for_phone)
+
+    from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+    kb = ReplyKeyboardMarkup(
+        keyboard=[[
+            KeyboardButton(text="📞 Поделиться номером", request_contact=True)
+        ]],
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )
     await message.answer(
         f"✅ ИНН найден: *{pharmacy['name']}*\n\n"
-        f"Теперь введите *номер телефона* аптеки:\n"
-        f"Пример: `+998901234567`",
-        parse_mode="Markdown"
+        f"Нажмите кнопку ниже чтобы поделиться номером телефона:",
+        parse_mode="Markdown",
+        reply_markup=kb
+    )
     )
 
 
