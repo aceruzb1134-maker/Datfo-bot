@@ -458,6 +458,51 @@ async def list_pharmacies(message: Message, admin_ids: list):
     if chunk:
         await message.answer("\n".join(chunk), parse_mode="Markdown")
 
+# ── Add single pharmacy ───────────────────────────────────────────────────────
+
+@router.message(F.text == "➕ Добавить аптеку")
+async def add_pharmacy_start(message: Message, state: FSMContext, admin_ids: list):
+    if not is_admin(message.from_user.id, admin_ids):
+        return
+    await state.set_state(AddPharmacyState.waiting_for_inn)
+    await message.answer(
+        "Введите *ИНН* новой аптеки.\nНапример: `302341262`",
+        parse_mode="Markdown"
+    )
+
+
+@router.message(AddPharmacyState.waiting_for_inn)
+async def add_pharmacy_inn_handler(message: Message, state: FSMContext, admin_ids: list):
+    if not is_admin(message.from_user.id, admin_ids):
+        return
+    inn = message.text.strip()
+    if not inn.isdigit():
+        await message.answer("❌ ИНН должен состоять только из цифр.")
+        return
+    existing = await get_pharmacy_by_inn(inn)
+    if existing:
+        await message.answer(f"⚠️ ИНН `{inn}` уже существует.", parse_mode="Markdown")
+        return
+    await state.update_data(inn=inn)
+    await state.set_state(AddPharmacyState.waiting_for_name)
+    await message.answer(f"ИНН: `{inn}`\nВведите *название аптеки*:", parse_mode="Markdown")
+
+
+@router.message(AddPharmacyState.waiting_for_name)
+async def add_pharmacy_name_handler(message: Message, state: FSMContext, admin_ids: list):
+    if not is_admin(message.from_user.id, admin_ids):
+        return
+    data = await state.get_data()
+    inn = data["inn"]
+    name = message.text.strip()
+    await upsert_pharmacy(inn, name)
+    await state.clear()
+    await message.answer(
+        f"✅ Аптека добавлена!\n🔑 ИНН: `{inn}` — {name}\n\nОтправьте ИНН аптеке для регистрации.",
+        parse_mode="Markdown"
+    )
+
+
 
 # ── Cancel ────────────────────────────────────────────────────────────────────
 
