@@ -35,7 +35,7 @@ async def main():
     
 
     print(f"🤖 Бот запущен. Администраторы: {ADMIN_IDS}")
-    await dp.start_polling(bot, allowed_updates=["message", "callback_query"])
+    await dp.start_polling(bot, allowed_updates=["message", "callback_query", "contact"])
 
 
 if __name__ == "__main__":
