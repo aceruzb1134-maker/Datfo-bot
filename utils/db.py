@@ -21,6 +21,7 @@ async def init_db():
                 legal_name    TEXT,
                 name          TEXT    NOT NULL,
                 telegram_id   BIGINT  UNIQUE,
+                phone         TEXT,
                 registered_at TIMESTAMP
             )
         """)
