@@ -85,12 +85,14 @@ async def handle_inn(message: Message, state: FSMContext):
         parse_mode="Markdown",
         reply_markup=kb
     )
-    )
 
 
-@router.message(RegState.waiting_for_phone)
+
+@router.message(RegState.waiting_for_phone, F.contact)
 async def handle_phone(message: Message, state: FSMContext):
-    phone = message.text.strip()
+    phone = message.contact.phone_number
+    if not phone.startswith("+"):
+        phone = "+" + phone
 
     # Basic validation
     if len(phone.replace("+", "").replace(" ", "")) < 9:
