@@ -100,12 +100,12 @@ async def get_pharmacy_by_tg(telegram_id: int):
         return await db.fetchrow("SELECT * FROM pharmacies WHERE telegram_id = $1", telegram_id)
 
 
-async def link_pharmacy_telegram(inn: str, telegram_id: int):
+async def link_pharmacy_telegram(inn: str, telegram_id: int, phone: str = ""):
     pool = await get_pool()
     async with pool.acquire() as db:
         await db.execute("""
-            UPDATE pharmacies SET telegram_id = $1, registered_at = NOW() WHERE inn = $2
-        """, telegram_id, inn)
+            UPDATE pharmacies SET telegram_id = $1, registered_at = NOW(), phone = $3 WHERE inn = $2
+        """, telegram_id, inn, phone)
 
 
 async def get_all_pharmacies():
